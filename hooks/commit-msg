@@ -1,0 +1,59 @@
+#!/bin/sh
+
+# .husky/commit-msg
+
+msg="$(cat "$1")"
+
+# Early exit if a preformatted message or merge commit is detected
+if echo "$msg" | grep -qE '^(\[|feat\(|fix\(|refactor\(|chore\(|build\(|docs\(|test\(|Merge)'; then
+    exit 0
+fi
+
+
+# Count how many lines are in the commit message.
+# Note: Some POSIX shells might need a tweak for 'wc -l' if it adds spacing.
+nl="$(printf '%s\n' "$msg" | wc -l | awk '{print $1}')"
+
+# Extract the last line (candidate for ticket reference)
+ref="$(printf '%s\n' "$msg" | tail -n 1)"
+
+# Extract semantic pre-body lines if they exist
+type="$(printf '%s\n' "$msg" | sed -n '1p')"
+scope="$(printf '%s\n' "$msg" | sed -n '2p')"
+title="$(printf '%s\n' "$msg" | sed -n '3p')"
+
+# Extract lines 4..(n-1) as body
+if [ "$nl" -gt 3 ]; then
+    body_part="$(printf '%s\n' "$msg" | sed '1,3d')"
+    body="$(printf '%s\n' "$body_part" | sed '$d')"
+else
+    body=""
+fi
+
+case "$ref" in
+    *[!0-9]* | '')  # if post-body line is non-numeric or empty
+        if [ -n "$ref" ] && [ "$ref" != "none" ]; then # last line not empty and not "none", append to body
+            body="$(printf '%s\n%s\n' "$body" "$ref")"
+        fi
+        numeric_ref=""
+        ;;
+    *)  # last line is numeric, set as ref for later
+        numeric_ref="$ref"
+        ;;
+esac
+
+{
+    printf '%s(%s): %s\n' "$type" "$(echo "$scope" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')" "$title"
+
+    if [ -n "$body" ]; then
+        printf '\n%s\n' "$body"
+    fi
+
+    if [ -n "$numeric_ref" ]; then
+        printf '\nrefs: #%s\n' "$numeric_ref"
+    else
+        if [ -n "$ref" ]; then
+            printf '\nrefs: none\n'
+        fi
+    fi
+} > "$1"

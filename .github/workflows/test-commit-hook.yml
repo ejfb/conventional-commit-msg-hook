@@ -1,0 +1,29 @@
+name: Commit Hook Tests
+
+on:
+  workflow_call:
+  pull_request:
+    types:
+      - synchronize
+      - opened
+      - reopened
+    paths:
+      - 'hooks/**'
+      - '.github/workflows/test-commit-hook.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Install shunit2
+        run: sudo apt-get update && sudo apt-get install -y shunit2
+
+      - name: Run Commit Hook Tests
+        working-directory: hooks/test
+        run: shunit2 commit-msg_test.sh
+
