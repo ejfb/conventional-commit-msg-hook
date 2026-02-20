@@ -2,6 +2,8 @@
 
 # .husky/commit-msg
 
+REF_PREFIX="#"
+
 msg="$(cat "$1")"
 
 # Early exit if a preformatted message or merge commit is detected
@@ -50,7 +52,7 @@ esac
     fi
 
     if [ -n "$numeric_ref" ]; then
-        printf '\nrefs: #%s\n' "$numeric_ref"
+        printf '\nrefs: %s%s\n' "$REF_PREFIX" "$numeric_ref"
     else
         if [ -n "$ref" ]; then
             printf '\nrefs: none\n'

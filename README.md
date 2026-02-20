@@ -35,7 +35,7 @@ refs: #42
 ```
 
 - Scope is lowercased and spaces are replaced with hyphens.
-- If the last line is a number it becomes `refs: #<n>`, otherwise `refs: none`.
+- If the last line is a number it becomes `refs: <prefix><n>`, otherwise `refs: none`. The prefix defaults to `#` for Notion style refs and can be changed at the top of the hook (and test) file.
 - If the message is already conventionally formatted (e.g. `feat(...):`) or is a merge commit, it passes through unchanged.
 
 ## Installation
@@ -55,6 +55,17 @@ Or point the repo at this hooks directory directly:
 ```sh
 git -C /path/to/your/repo config core.hooksPath /path/to/conventional-commit-msg-hook/hooks
 ```
+
+## Configuration
+
+Edit `REF_PREFIX` at the top of `hooks/commit-msg` to match your issue tracker:
+
+```sh
+REF_PREFIX="#"      # GitHub (default)
+REF_PREFIX="PROJ-"  # Jira
+```
+
+Update the same variable at the top of `hooks/test/commit-msg_test.sh` to keep tests in sync.
 
 ## Testing
 
