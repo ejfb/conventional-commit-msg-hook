@@ -6,8 +6,17 @@ REF_PREFIX="#"
 
 msg="$(cat "$1")"
 
-# Early exit if a preformatted message or merge commit is detected
-if echo "$msg" | grep -qE '^(\[|feat\(|fix\(|refactor\(|chore\(|build\(|docs\(|test\(|Merge)'; then
+# Merge commits pass through unchanged
+if echo "$msg" | grep -qE '^Merge'; then
+    exit 0
+fi
+
+# Already conventionally formatted
+if echo "$msg" | grep -qE '^(\[|feat\(|fix\(|refactor\(|chore\(|build\(|docs\(|test\()'; then
+    if echo "$msg" | grep -q '^refs:'; then
+        exit 0
+    fi
+    printf '%s\n\nrefs: none\n' "$msg" > "$1"
     exit 0
 fi
 
