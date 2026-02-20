@@ -2,10 +2,21 @@
 
 # .husky/commit-msg
 
+REF_PREFIX="#"
+
 msg="$(cat "$1")"
 
-# Early exit if a preformatted message or merge commit is detected
-if echo "$msg" | grep -qE '^(\[|feat\(|fix\(|refactor\(|chore\(|build\(|docs\(|test\(|Merge)'; then
+# Merge commits pass through unchanged
+if echo "$msg" | grep -qE '^Merge'; then
+    exit 0
+fi
+
+# Already conventionally formatted
+if echo "$msg" | grep -qE '^(\[|feat\(|fix\(|refactor\(|chore\(|build\(|docs\(|test\()'; then
+    if echo "$msg" | grep -q '^refs:'; then
+        exit 0
+    fi
+    printf '%s\n\nrefs: none\n' "$msg" > "$1"
     exit 0
 fi
 
@@ -50,7 +61,7 @@ esac
     fi
 
     if [ -n "$numeric_ref" ]; then
-        printf '\nrefs: #%s\n' "$numeric_ref"
+        printf '\nrefs: %s%s\n' "$REF_PREFIX" "$numeric_ref"
     else
         if [ -n "$ref" ]; then
             printf '\nrefs: none\n'

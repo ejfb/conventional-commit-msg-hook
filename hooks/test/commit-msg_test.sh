@@ -2,6 +2,8 @@
 # run with shunit2 commit-msg_test.sh
 # shunit2 must be installed
 
+REF_PREFIX="#"
+
 testBasicCommitMessage() {
     cat > "$TEST_MSG_FILE" << EOL
 feat
