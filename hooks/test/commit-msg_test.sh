@@ -41,9 +41,7 @@ EOL
     expected="feat(login-api): Add user authentication
 
 Some description about the change
-Implements login flow
-
-refs: none"
+Implements login flow"
 
     actual=$(cat "$TEST_MSG_FILE")
     assertEquals "$expected" "$actual"
@@ -59,9 +57,7 @@ EOL
 
     ../commit-msg "$TEST_MSG_FILE"
 
-    expected="refactor(readme): fixes typo
-
-refs: none"
+    expected="refactor(readme): fixes typo"
 
     actual=$(cat "$TEST_MSG_FILE")
     assertEquals "$expected" "$actual"
@@ -73,8 +69,6 @@ feat(login-api): Add user authentication
 
 Some description about the change
 Implements login flow
-
-refs: none
 EOL
 
     ../commit-msg "$TEST_MSG_FILE"
@@ -82,9 +76,7 @@ EOL
     expected="feat(login-api): Add user authentication
 
 Some description about the change
-Implements login flow
-
-refs: none"
+Implements login flow"
 
     actual=$(cat "$TEST_MSG_FILE")
     assertEquals "$expected" "$actual"
@@ -97,7 +89,7 @@ feat(login-api): Add user authentication
 Some description about the change
 Implements login flow
 
-refs: none
+refs: #456
 EOL
 
     ../commit-msg "$TEST_MSG_FILE"
@@ -107,7 +99,7 @@ EOL
 Some description about the change
 Implements login flow
 
-refs: none"
+refs: #456"
 
     actual=$(cat "$TEST_MSG_FILE")
     assertEquals "$expected" "$actual"
@@ -133,9 +125,7 @@ EOL
 
     ../commit-msg "$TEST_MSG_FILE"
 
-    expected="feat(login-api): Add user authentication
-
-refs: none"
+    expected="feat(login-api): Add user authentication"
 
     actual=$(cat "$TEST_MSG_FILE")
     assertEquals "$expected" "$actual"
@@ -152,9 +142,7 @@ EOL
 
     ../commit-msg "$TEST_MSG_FILE"
 
-    expected="feat(login-api): Add user authentication
-
-refs: none"
+    expected="feat(login-api): Add user authentication"
 
     actual=$(cat "$TEST_MSG_FILE")
     assertEquals "$expected" "$actual"
