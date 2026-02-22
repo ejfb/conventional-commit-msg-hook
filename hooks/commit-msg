@@ -11,12 +11,8 @@ if echo "$msg" | grep -qE '^Merge'; then
     exit 0
 fi
 
-# Already conventionally formatted
+# Already conventionally formatted — pass through unchanged
 if echo "$msg" | grep -qE '^(\[|feat\(|fix\(|refactor\(|chore\(|build\(|docs\(|test\()'; then
-    if echo "$msg" | grep -q '^refs:'; then
-        exit 0
-    fi
-    printf '%s\n\nrefs: none\n' "$msg" > "$1"
     exit 0
 fi
 
@@ -71,7 +67,5 @@ fi
 
     if [ -n "$numeric_ref" ]; then
         printf '\nrefs: %s%s\n' "$REF_PREFIX" "$numeric_ref"
-    else
-        printf '\nrefs: none\n'
     fi
 } > "$1"
