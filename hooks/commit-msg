@@ -14,8 +14,7 @@ fi
 # Note: Some POSIX shells might need a tweak for 'wc -l' if it adds spacing.
 nl="$(printf '%s\n' "$msg" | wc -l | awk '{print $1}')"
 
-# Extract the last line (candidate for ticket reference)
-ref="$(printf '%s\n' "$msg" | tail -n 1)"
+# ref and numeric_ref are resolved below, after nl and body are known
 
 # Extract semantic pre-body lines if they exist
 type="$(printf '%s\n' "$msg" | sed -n '1p')"
@@ -30,17 +29,27 @@ else
     body=""
 fi
 
-case "$ref" in
-    *[!0-9]* | '')  # if post-body line is non-numeric or empty
-        if [ -n "$ref" ] && [ "$ref" != "none" ]; then # last line not empty and not "none", append to body
-            body="$(printf '%s\n%s\n' "$body" "$ref")"
-        fi
-        numeric_ref=""
-        ;;
-    *)  # last line is numeric, set as ref for later
-        numeric_ref="$ref"
-        ;;
-esac
+# Only treat the last line as a ref candidate when there are more than 3 lines.
+# With exactly 3 lines (type / scope / title) tail -n 1 returns the title,
+# which must not be re-appended to the body.
+if [ "$nl" -gt 3 ]; then
+    ref="$(printf '%s\n' "$msg" | tail -n 1)"
+
+    case "$ref" in
+        *[!0-9]* | '')  # if post-body line is non-numeric or empty
+            if [ -n "$ref" ] && [ "$ref" != "none" ]; then # last line not empty and not "none", append to body
+                body="$(printf '%s\n%s\n' "$body" "$ref")"
+            fi
+            numeric_ref=""
+            ;;
+        *)  # last line is numeric, set as ref for later
+            numeric_ref="$ref"
+            ;;
+    esac
+else
+    ref=""
+    numeric_ref=""
+fi
 
 {
     printf '%s(%s): %s\n' "$type" "$(echo "$scope" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')" "$title"
@@ -52,8 +61,6 @@ esac
     if [ -n "$numeric_ref" ]; then
         printf '\nrefs: #%s\n' "$numeric_ref"
     else
-        if [ -n "$ref" ]; then
-            printf '\nrefs: none\n'
-        fi
+        printf '\nrefs: none\n'
     fi
 } > "$1"
