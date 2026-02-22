@@ -141,6 +141,25 @@ refs: none"
     assertEquals "$expected" "$actual"
 }
 
+# Regression: a 3-line unformatted message (type / scope / title, no body, no ref)
+# previously caused the title to be duplicated in the body.
+testThreeLineNoBodyNoRef() {
+    cat > "$TEST_MSG_FILE" << EOL
+feat
+login api
+Add user authentication
+EOL
+
+    ../commit-msg "$TEST_MSG_FILE"
+
+    expected="feat(login-api): Add user authentication
+
+refs: none"
+
+    actual=$(cat "$TEST_MSG_FILE")
+    assertEquals "$expected" "$actual"
+}
+
 
 setUp() {
     TEST_MSG_FILE="test_commit_msg.txt"
